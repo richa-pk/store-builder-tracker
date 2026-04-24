@@ -24,8 +24,6 @@
       --accent-dark: #1a1a1a;
       --accent-light: #333333;
       --line: rgba(0, 0, 0, 0.1);
-      --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
     }
 
     * {
@@ -46,12 +44,11 @@
 
     header {
       background: #000000;
-      border-bottom: none;
+      border-bottom: 1px solid var(--line);
       padding: 20px 32px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: var(--shadow);
       color: white;
     }
 
@@ -97,7 +94,6 @@
       justify-content: center;
       font-size: 12px;
       font-weight: 700;
-      box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
     }
 
     .hero {
@@ -107,7 +103,6 @@
       padding: 48px 32px;
       margin: 32px auto;
       max-width: 1200px;
-      box-shadow: var(--shadow);
     }
 
     .hero h1 {
@@ -135,7 +130,6 @@
       gap: 12px;
       font-weight: 700;
       font-size: 18px;
-      box-shadow: var(--shadow);
     }
 
     .shell {
@@ -170,16 +164,14 @@
       color: inherit;
       background: white;
       border: 1px solid var(--line);
-      box-shadow: var(--shadow);
       overflow: hidden;
-      transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+      transition: transform 200ms ease, border-color 200ms ease;
       text-align: center;
       border-radius: 10px;
     }
 
     .product:hover {
       transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
       border-color: var(--accent-light);
     }
 
@@ -282,7 +274,6 @@
       background: #000000;
       border-color: #000000;
       color: white;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
     button:hover,
@@ -295,7 +286,6 @@
       background: #1a1a1a;
       border-color: #1a1a1a;
       color: white;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       transform: translateY(-1px);
     }
 
@@ -309,7 +299,6 @@
     .panel {
       background: white;
       border: 1px solid var(--line);
-      box-shadow: var(--shadow);
       padding: 22px;
       border-radius: 10px;
     }
@@ -523,57 +512,57 @@
         <div class="catalog">
           <article class="product">
             <div class="art">
-              <div style="width: 120px; height: 180px; background: linear-gradient(135deg, #5b8fc4 0%, #4a6fa5 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; text-align: center; padding: 8px;">
-                YETI Rambler Bottle 18 oz
+              <div style="width: 120px; height: 180px; background: linear-gradient(135deg, #5b8fc4 0%, #4a6fa5 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; text-align: center; padding: 8px; font-weight: 600;">
+                YETI Bottle
               </div>
             </div>
             <div class="product-copy">
               <div class="brand">YETI</div>
               <div class="meta">
-                <h2 class="name">YETI Rambler Bottle 18 oz Chug</h2>
+                <h2 class="name">Rambler Bottle 18 oz Chug</h2>
               </div>
               <div class="price">$40.00</div>
               <div class="colors">2 Colors</div>
               <div class="actions">
-                <button class="primary" id="add-yeti18" name="add_yeti_18">Add to Cart</button>
+                <button class="primary" id="add-yeti18" name="yeti_rambler_18">Add to Cart</button>
               </div>
             </div>
           </article>
 
           <article class="product">
             <div class="art">
-              <div style="width: 120px; height: 180px; background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; text-align: center; padding: 8px;">
-                YETI Rambler Bottle 26 oz
+              <div style="width: 120px; height: 180px; background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; text-align: center; padding: 8px; font-weight: 600;">
+                YETI Bottle
               </div>
             </div>
             <div class="product-copy">
               <div class="brand">YETI</div>
               <div class="meta">
-                <h2 class="name">YETI Rambler Bottle 26 oz Chug</h2>
+                <h2 class="name">Rambler Bottle 26 oz Chug</h2>
               </div>
               <div class="price">$50.00</div>
               <div class="colors">3 Colors</div>
               <div class="actions">
-                <button class="primary" id="add-yeti26" name="add_yeti_26">Add to Cart</button>
+                <button class="primary" id="add-yeti26" name="yeti_rambler_26">Add to Cart</button>
               </div>
             </div>
           </article>
 
           <article class="product">
             <div class="art">
-              <div style="width: 120px; height: 180px; background: linear-gradient(135deg, #3a3a3a 0%, #1f1f1f 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; text-align: center; padding: 8px;">
-                YETI Rambler 30 oz
+              <div style="width: 120px; height: 180px; background: linear-gradient(135deg, #3a3a3a 0%, #1f1f1f 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; text-align: center; padding: 8px; font-weight: 600;">
+                YETI Tumbler
               </div>
             </div>
             <div class="product-copy">
               <div class="brand">YETI</div>
               <div class="meta">
-                <h2 class="name">YETI Rambler 30 oz Tumbler</h2>
+                <h2 class="name">Rambler 30 oz Tumbler</h2>
               </div>
               <div class="price">$48.00</div>
               <div class="colors">2 Colors</div>
               <div class="actions">
-                <button class="primary" id="add-yeti30" name="add_yeti_30">Add to Cart</button>
+                <button class="primary" id="add-yeti30" name="yeti_rambler_30">Add to Cart</button>
               </div>
             </div>
           </article>
@@ -584,76 +573,76 @@
         <div class="catalog">
           <article class="product">
             <div class="art">
-              <div style="width: 100px; height: 160px; background: linear-gradient(135deg, #c4a57b 0%, #9d7e5b 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; text-align: center; padding: 8px;">
-                Patagonia Tee
+              <div style="width: 100px; height: 160px; background: linear-gradient(135deg, #e8d4c4 0%, #d5bba3 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #333; font-size: 10px; text-align: center; padding: 8px; font-weight: 600;">
+                Patagonia Vest
               </div>
             </div>
             <div class="product-copy">
               <div class="brand">PATAGONIA</div>
               <div class="meta">
-                <h2 class="name">Women's Organic T-Shirt</h2>
+                <h2 class="name">Women's Better Sweater Vest</h2>
               </div>
-              <div class="price">$65.00</div>
-              <div class="colors">4 Colors</div>
+              <div class="price">$129.00</div>
+              <div class="colors">3 Colors</div>
               <div class="actions">
-                <button class="primary" id="add-patagonia-tee" name="add_patagonia_tee">Add to Cart</button>
+                <button class="primary" id="add-patagonia-vest" name="patagonia_womens_vest">Add to Cart</button>
               </div>
             </div>
           </article>
 
           <article class="product">
             <div class="art">
-              <div style="width: 100px; height: 160px; background: linear-gradient(135deg, #6a4c93 0%, #4a2976 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; text-align: center; padding: 8px;">
-                Lululemon Tank
+              <div style="width: 100px; height: 160px; background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; text-align: center; padding: 8px; font-weight: 600;">
+                Patagonia Qutr-Zip
               </div>
             </div>
             <div class="product-copy">
-              <div class="brand">LULULEMON</div>
+              <div class="brand">PATAGONIA</div>
               <div class="meta">
-                <h2 class="name">Align Tank Top</h2>
+                <h2 class="name">Women's Better Sweater Quarter-Zip</h2>
               </div>
-              <div class="price">$78.00</div>
-              <div class="colors">5 Colors</div>
+              <div class="price">$149.00</div>
+              <div class="colors">2 Colors</div>
               <div class="actions">
-                <button class="primary" id="add-lulu-tank" name="add_lulu_tank">Add to Cart</button>
+                <button class="primary" id="add-patagonia-quarter" name="patagonia_womens_quarter_zip">Add to Cart</button>
               </div>
             </div>
           </article>
 
           <article class="product">
             <div class="art">
-              <div style="width: 100px; height: 160px; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; text-align: center; padding: 8px;">
+              <div style="width: 100px; height: 160px; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; text-align: center; padding: 8px; font-weight: 600;">
                 Patagonia Jacket
               </div>
             </div>
             <div class="product-copy">
               <div class="brand">PATAGONIA</div>
               <div class="meta">
-                <h2 class="name">Women's Lightweight Jacket</h2>
+                <h2 class="name">Women's Better Sweater Jacket</h2>
               </div>
-              <div class="price">$139.00</div>
+              <div class="price">$169.00</div>
               <div class="colors">3 Colors</div>
               <div class="actions">
-                <button class="primary" id="add-patagonia-jacket" name="add_patagonia_jacket">Add to Cart</button>
+                <button class="primary" id="add-patagonia-jacket" name="patagonia_womens_jacket">Add to Cart</button>
               </div>
             </div>
           </article>
 
           <article class="product">
             <div class="art">
-              <div style="width: 100px; height: 160px; background: linear-gradient(135deg, #d4755f 0%, #a84f3f 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; text-align: center; padding: 8px;">
+              <div style="width: 100px; height: 160px; background: linear-gradient(135deg, #d4755f 0%, #a84f3f 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; text-align: center; padding: 8px; font-weight: 600;">
                 Yeti Cap
               </div>
             </div>
             <div class="product-copy">
               <div class="brand">YETI</div>
               <div class="meta">
-                <h2 class="name">YETI Trucker Hat</h2>
+                <h2 class="name">Tradepost Lopro Trucker Hat</h2>
               </div>
               <div class="price">$35.00</div>
               <div class="colors">2 Colors</div>
               <div class="actions">
-                <button class="primary" id="add-yeti-cap" name="add_yeti_cap">Add to Cart</button>
+                <button class="primary" id="add-yeti-cap" name="yeti_trucker_hat">Add to Cart</button>
               </div>
             </div>
           </article>
@@ -673,13 +662,13 @@
               <label for="productInterest">Interested In</label>
               <select id="productInterest" name="product_interest">
                 <option value="">Select a product</option>
-                <option>YETI Rambler Bottle 18 oz</option>
-                <option>YETI Rambler Bottle 26 oz</option>
-                <option>YETI Rambler 30 oz</option>
-                <option>Women's Organic T-Shirt</option>
-                <option>Align Tank Top</option>
-                <option>Women's Lightweight Jacket</option>
-                <option>YETI Trucker Hat</option>
+                <option>YETI Rambler Bottle 18 oz Chug</option>
+                <option>YETI Rambler Bottle 26 oz Chug</option>
+                <option>YETI Rambler 30 oz Tumbler</option>
+                <option>Patagonia Women's Better Sweater Vest</option>
+                <option>Patagonia Women's Better Sweater Quarter-Zip</option>
+                <option>Patagonia Women's Better Sweater Jacket</option>
+                <option>YETI Tradepost Lopro Trucker Hat</option>
               </select>
             </div>
             <div class="field">
