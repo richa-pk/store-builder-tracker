@@ -3,7 +3,7 @@
 
 function doPost(e) {
   try {
-    const spreadsheet = SpreadsheetApp.openById('YOUR_SHEET_ID'); // You'll add this
+    const spreadsheet = SpreadsheetApp.openById('189HCeU4ra4-cxymH6mPEMP_BWLnA7t8g-m6EnbN0E5I'); // Replace with your actual sheet ID
     const sheet = spreadsheet.getSheetByName('Events') || spreadsheet.insertSheet('Events');
     
     const data = JSON.parse(e.postData.contents);
@@ -38,17 +38,17 @@ function doPost(e) {
     
     sheet.appendRow(row);
     
-    return ContentService.createTextOutput(JSON.stringify({
+    return buildResponse({
       ok: true,
       message: 'Event tracked successfully',
       count: sheet.getLastRow()
-    })).setMimeType(ContentService.MimeType.JSON);
+    });
     
   } catch (error) {
-    return ContentService.createTextOutput(JSON.stringify({
+    return buildResponse({
       ok: false,
       error: error.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
+    });
   }
 }
 
@@ -58,7 +58,7 @@ function doGet(e) {
     const sheet = spreadsheet.getSheetByName('Events');
     
     if (!sheet || sheet.getLastRow() === 0) {
-      return ContentService.createTextOutput(JSON.stringify([])).setMimeType(ContentService.MimeType.JSON);
+      return buildResponse([]);
     }
     
     // Get last 25 events
@@ -73,12 +73,26 @@ function doGet(e) {
       session_id: row[5]
     }));
     
-    return ContentService.createTextOutput(JSON.stringify(events.reverse())).setMimeType(ContentService.MimeType.JSON);
+    return buildResponse(events.reverse());
     
   } catch (error) {
-    return ContentService.createTextOutput(JSON.stringify({
+    return buildResponse({
       ok: false,
       error: error.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
+    });
   }
+}
+
+function doOptions(e) {
+  return buildResponse({});
+}
+
+function buildResponse(data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON)
+    .setHeader('Access-Control-Allow-Origin', '*')
+    .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    .setHeader('Access-Control-Allow-Headers', 'Content-Type')
+    .setHeader('Access-Control-Max-Age', '86400');
 }
