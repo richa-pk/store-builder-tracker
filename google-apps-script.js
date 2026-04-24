@@ -1,98 +1,118 @@
-// Google Apps Script for tracking events
-// Deploy as a web app and use the deployment URL in your tracker
+const SHEET_ID = '189HCeU4ra4-cxymH6mPEMP_BWLnA7t8g-m6EnbN0E5I';
+const SHEET_NAME = 'Website Activity';
 
 function doPost(e) {
   try {
-    const spreadsheet = SpreadsheetApp.openById('189HCeU4ra4-cxymH6mPEMP_BWLnA7t8g-m6EnbN0E5I'); // Replace with your actual sheet ID
-    const sheet = spreadsheet.getSheetByName('Events') || spreadsheet.insertSheet('Events');
-    
-    const data = JSON.parse(e.postData.contents);
-    
-    // Add headers if sheet is empty
-    if (sheet.getLastRow() === 0) {
-      const headers = [
-        'Timestamp', 'Event Type', 'Category', 'Text/Label', 'URL', 
-        'Session ID', 'User Agent', 'Viewport', 'Element Details'
-      ];
-      sheet.appendRow(headers);
-    }
-    
-    // Append event data
-    const row = [
-      data.timestamp || new Date().toISOString(),
-      data.event_type || '',
-      data.action_category || '',
-      data.clicked_text || data.button_text || data.field_name || '',
-      data.page_url || '',
-      data.session_id || '',
-      data.user_agent || '',
-      (data.viewport ? `${data.viewport.width}x${data.viewport.height}` : ''),
-      JSON.stringify({
-        elementId: data.element_id,
-        elementName: data.element_name,
-        elementTag: data.element_tag,
-        fieldType: data.field_type,
-        clickedLink: data.clicked_link_url
-      })
-    ];
-    
-    sheet.appendRow(row);
-    
-    return buildResponse({
-      ok: true,
-      message: 'Event tracked successfully',
-      count: sheet.getLastRow()
-    });
-    
+    const body = e && e.postData && e.postData.contents ? e.postData.contents : '{}';
+    const event = JSON.parse(body);
+
+    const sheet = getOrCreateSheet_();
+    ensureHeader_(sheet);
+    sheet.appendRow(mapEventToRow_(event));
+
+    return json_({ ok: true, accepted: true, row: sheet.getLastRow() });
   } catch (error) {
-    return buildResponse({
-      ok: false,
-      error: error.toString()
-    });
+    return json_({ ok: false, error: String(error) });
   }
 }
 
 function doGet(e) {
   try {
-    const spreadsheet = SpreadsheetApp.openById('YOUR_SHEET_ID');
-    const sheet = spreadsheet.getSheetByName('Events');
-    
-    if (!sheet || sheet.getLastRow() === 0) {
-      return buildResponse([]);
-    }
-    
-    // Get last 25 events
-    const data = sheet.getRange(Math.max(2, sheet.getLastRow() - 24), 1, Math.min(25, sheet.getLastRow() - 1), sheet.getLastColumn()).getValues();
-    
-    const events = data.map(row => ({
+    const sheet = getOrCreateSheet_();
+    ensureHeader_(sheet);
+
+    const lastRow = sheet.getLastRow();
+    if (lastRow <= 1) return json_([]);
+
+    const startRow = Math.max(2, lastRow - 24);
+    const rowCount = lastRow - startRow + 1;
+    const values = sheet.getRange(startRow, 1, rowCount, sheet.getLastColumn()).getValues();
+
+    const events = values.map(row => ({
       timestamp: row[0],
       event_type: row[1],
-      action_category: row[2],
-      label: row[3],
-      page_url: row[4],
-      session_id: row[5]
-    }));
-    
-    return buildResponse(events.reverse());
-    
+      page_url: row[2],
+      page_title: row[3],
+      clicked_link_text: row[4],
+      clicked_link_url: row[5],
+      button_text: row[6],
+      field_name: row[7],
+      entered_data: row[8],
+      user_id: row[9],
+      session_id: row[10],
+      referrer: row[11],
+      user_agent: row[12],
+      notes: row[13]
+    })).reverse();
+
+    return json_(events);
   } catch (error) {
-    return buildResponse({
-      ok: false,
-      error: error.toString()
-    });
+    return json_({ ok: false, error: String(error) });
   }
 }
 
-function doOptions(e) {
-  return buildResponse({});
+function getOrCreateSheet_() {
+  const spreadsheet = SpreadsheetApp.openById(SHEET_ID);
+  const existing = spreadsheet.getSheetByName(SHEET_NAME);
+  return existing || spreadsheet.insertSheet(SHEET_NAME);
 }
 
-function buildResponse(data) {
+function ensureHeader_(sheet) {
+  if (sheet.getLastRow() > 0) return;
+
+  sheet.appendRow([
+    'Timestamp',
+    'Activity Type',
+    'Page URL',
+    'Page Title',
+    'Clicked Link',
+    'Link URL',
+    'Button',
+    'Field Name',
+    'Entered Data',
+    'User ID',
+    'Session ID',
+    'Referrer',
+    'Device Info',
+    'Notes'
+  ]);
+}
+
+function mapEventToRow_(event) {
+  const notes = [
+    event.action_category ? `category=${event.action_category}` : '',
+    event.button_id ? `button_id=${event.button_id}` : '',
+    event.clicked_text ? `clicked_text=${event.clicked_text}` : '',
+    event.element_tag ? `element_tag=${event.element_tag}` : '',
+    event.field_id ? `field_id=${event.field_id}` : '',
+    event.field_type ? `field_type=${event.field_type}` : '',
+    event.element_id ? `element_id=${event.element_id}` : '',
+    event.element_name ? `element_name=${event.element_name}` : '',
+    event.element_classes ? `classes=${event.element_classes}` : '',
+    event.element_role ? `role=${event.element_role}` : '',
+    event.viewport ? `viewport=${event.viewport.width}x${event.viewport.height}` : ''
+  ].filter(Boolean).join(' | ');
+
+  return [
+    event.timestamp || new Date().toISOString(),
+    event.event_type || '',
+    event.page_url || '',
+    event.page_title || '',
+    event.clicked_link_text || '',
+    event.clicked_link_url || '',
+    event.button_text || '',
+    event.field_name || '',
+    event.entered_data || '',
+    event.user_id || '',
+    event.session_id || '',
+    event.referrer || '',
+    event.user_agent || '',
+    notes
+  ];
+}
+
+function json_(data) {
   return ContentService
     .createTextOutput(JSON.stringify(data))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeader('Access-Control-Allow-Origin', '*')
-    .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-    .setHeader('Access-Control-Allow-Headers', 'Content-Type')
-    .setHeader('Access-Control-Max-Age', '86400');
+    .setMimeType(ContentService.MimeType.JSON);
 }

@@ -12,7 +12,7 @@
     // For local testing, uncomment:
     // window.WEBSITE_ACTIVITY_APPS_SCRIPT_URL = 'http://localhost:8787/track';
   </script>
-  <script src="tracker.js" defer></script>
+  <script src="./tracker.js" defer></script>
   <style>
     :root {
       --bg: #ffffff;
@@ -710,54 +710,46 @@
       }
     });
 
-    async function refreshEvents() {
-      try {
-        // Determine the events endpoint based on tracking endpoint
-        const trackingEndpoint = window.WEBSITE_ACTIVITY_APPS_SCRIPT_URL || '';
-        let eventsEndpoint = '/events'; // default for local server
-        
-        if (trackingEndpoint.includes('script.google.com')) {
-          // Use GET for Google Apps Script
-          eventsEndpoint = trackingEndpoint;
-        }
-        
-        const response = await fetch(eventsEndpoint);
-        const events = await response.json();
-        const log = document.getElementById('event-log');
+  async function refreshEvents() {
+    const log = document.getElementById('event-log');
 
-        if (!events || !Array.isArray(events) || events.length === 0) {
-          log.innerHTML = '<div class="empty-log">Waiting for clicks and field changes.</div>';
-          return;
-        }
+    try {
+      const response = await fetch(window.WEBSITE_ACTIVITY_APPS_SCRIPT_URL);
+      const events = await response.json();
 
-        log.innerHTML = events.map(function (entry) {
-          const eventType = entry.event_type || 'event';
-          const category = entry.action_category || entry.category || 'uncategorized';
-          const label = entry.clicked_link_text || entry.button_text || entry.clicked_text || 
-                       entry.label || entry.field_name || 'interaction';
-          const timestamp = entry.timestamp || '';
-
-          const parts = [
-            '<div class="event-item">',
-            '<strong>' + eventType + '</strong>',
-            ' · ' + category,
-            '<br>',
-            label,
-            '<br>',
-            '<span>' + timestamp + '</span>',
-            '</div>'
-          ];
-
-          return parts.join('');
-        }).join('');
-      } catch (error) {
-        // Silently fail - tracker might not be configured yet
-        console.log('Event tracking not available:', error.message);
+      if (!Array.isArray(events) || events.length === 0) {
+        log.innerHTML = '<div class="empty-log">Waiting for clicks and field changes.</div>';
+        return;
       }
-    }
 
-    refreshEvents();
-    window.setInterval(refreshEvents, 1000);
+      log.innerHTML = events.map(function (entry) {
+        const label =
+          entry.clicked_link_text ||
+          entry.button_text ||
+          entry.clicked_text ||
+          entry.field_name ||
+          entry.notes ||
+          'no label';
+
+        return [
+          '<div class="event-item">',
+          '<strong>' + (entry.event_type || 'event') + '</strong>',
+          ' · ' + label,
+          '<br/>',
+          '<span>' + (entry.timestamp || '') + '</span>',
+          '</div>'
+        ].join('');
+      }).join('');
+    } catch (error) {
+      log.innerHTML =
+        '<div class="empty-log">Could not load events. Check Apps Script deployment access and /exec URL.</div>';
+      console.error('Event refresh failed:', error);
+    }
+  }
+
+  refreshEvents();
+  window.setInterval(refreshEvents, 3000);
+
   </script>
 </body>
 </html>
