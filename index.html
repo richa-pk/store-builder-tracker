@@ -5,9 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mayo Clinic x PK Health Gear Store</title>
   <script>
-    window.WEBSITE_ACTIVITY_APPS_SCRIPT_URL = 'https://richa-pk.github.io/store-builder-tracker/track';
+    // Google Apps Script Deployment URL
+    // Follow GOOGLE_APPS_SCRIPT_SETUP.md to get your deployment URL
+      window.WEBSITE_ACTIVITY_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzdrOcJ_IOtBbq44iaaDhd8vsYDhtjLJHYYaXw56L16oQJnR3Mj3V79lvPdg1pyp9NfLw/exec';
+    
+    // For local testing, uncomment:
+    // window.WEBSITE_ACTIVITY_APPS_SCRIPT_URL = 'http://localhost:8787/track';
   </script>
-  <script src="/tracker.js" defer></script>
+  <script src="tracker.js" defer></script>
   <style>
     :root {
       --bg: #ffffff;
@@ -717,32 +722,47 @@
 
     async function refreshEvents() {
       try {
-        const response = await fetch('/events');
+        // Determine the events endpoint based on tracking endpoint
+        const trackingEndpoint = window.WEBSITE_ACTIVITY_APPS_SCRIPT_URL || '';
+        let eventsEndpoint = '/events'; // default for local server
+        
+        if (trackingEndpoint.includes('script.google.com')) {
+          // Use GET for Google Apps Script
+          eventsEndpoint = trackingEndpoint;
+        }
+        
+        const response = await fetch(eventsEndpoint);
         const events = await response.json();
         const log = document.getElementById('event-log');
 
-        if (!events.length) {
+        if (!events || !Array.isArray(events) || events.length === 0) {
           log.innerHTML = '<div class="empty-log">Waiting for clicks and field changes.</div>';
           return;
         }
 
         log.innerHTML = events.map(function (entry) {
+          const eventType = entry.event_type || 'event';
+          const category = entry.action_category || entry.category || 'uncategorized';
+          const label = entry.clicked_link_text || entry.button_text || entry.clicked_text || 
+                       entry.label || entry.field_name || 'interaction';
+          const timestamp = entry.timestamp || '';
+
           const parts = [
             '<div class="event-item">',
-            '<strong>' + (entry.event_type || 'event') + '</strong>',
-            ' · ' + (entry.action_category || 'uncategorized'),
+            '<strong>' + eventType + '</strong>',
+            ' · ' + category,
             '<br>',
-            (entry.clicked_link_text || entry.button_text || entry.clicked_text || entry.field_name || 'no label'),
+            label,
             '<br>',
-            '<span>' + (entry.timestamp || '') + '</span>',
+            '<span>' + timestamp + '</span>',
             '</div>'
           ];
 
           return parts.join('');
         }).join('');
       } catch (error) {
-        document.getElementById('event-log').innerHTML =
-          '<div class="empty-log">Receiver not reachable yet. Start the local server and refresh.</div>';
+        // Silently fail - tracker might not be configured yet
+        console.log('Event tracking not available:', error.message);
       }
     }
 
