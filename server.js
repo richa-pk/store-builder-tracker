@@ -58,6 +58,11 @@ const server = http.createServer(function (request, response) {
     return;
   }
 
+  if (request.method === 'GET' && url.pathname === '/styles.css') {
+    sendFile(response, path.join(ROOT, 'styles.css'));
+    return;
+  }
+
   if (request.method === 'GET' && url.pathname === '/events') {
     sendJson(response, 200, recentEvents);
     return;

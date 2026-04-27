@@ -81,6 +81,12 @@ function ensureHeader_(sheet) {
 function mapEventToRow_(event) {
   const notes = [
     event.action_category ? `category=${event.action_category}` : '',
+    event.scroll_y !== undefined ? `scroll_y=${event.scroll_y}px` : '',
+    event.scroll_x !== undefined ? `scroll_x=${event.scroll_x}px` : '',
+    event.scroll_depth_percent !== undefined ? `scroll_depth=${event.scroll_depth_percent}%` : '',
+    event.scroll_direction ? `scroll_direction=${event.scroll_direction}` : '',
+    event.document_height !== undefined ? `document_height=${event.document_height}px` : '',
+    event.scrollable_height !== undefined ? `scrollable_height=${event.scrollable_height}px` : '',
     event.button_id ? `button_id=${event.button_id}` : '',
     event.clicked_text ? `clicked_text=${event.clicked_text}` : '',
     event.element_tag ? `element_tag=${event.element_tag}` : '',
