@@ -2,6 +2,10 @@
   const DEFAULT_ENDPOINT = window.WEBSITE_ACTIVITY_APPS_SCRIPT_URL || '';
   const SESSION_KEY = 'website_activity_tracker_session_id';
   const TEXT_MAX_LENGTH = 200;
+  const SCROLL_DEBOUNCE_MS = 250;
+  let scrollTimeoutId = null;
+  let lastTrackedScrollX = window.pageXOffset || document.documentElement.scrollLeft || 0;
+  let lastTrackedScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
 
   function uuid() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -123,6 +127,65 @@
     return payload;
   }
 
+  function getScrollMetrics() {
+    const documentElement = document.documentElement;
+    const body = document.body || {};
+    const scrollX = window.pageXOffset || documentElement.scrollLeft || body.scrollLeft || 0;
+    const scrollY = window.pageYOffset || documentElement.scrollTop || body.scrollTop || 0;
+    const documentHeight = Math.max(
+      body.scrollHeight || 0,
+      documentElement.scrollHeight || 0,
+      body.offsetHeight || 0,
+      documentElement.offsetHeight || 0,
+      body.clientHeight || 0,
+      documentElement.clientHeight || 0
+    );
+    const scrollableHeight = Math.max(documentHeight - window.innerHeight, 0);
+    const scrollPercent = scrollableHeight
+      ? Math.round((scrollY / scrollableHeight) * 100)
+      : 0;
+
+    return {
+      scroll_x: Math.round(scrollX),
+      scroll_y: Math.round(scrollY),
+      scroll_depth_percent: Math.max(0, Math.min(100, scrollPercent)),
+      scrollable_height: scrollableHeight,
+      document_height: documentHeight
+    };
+  }
+
+  function buildScrollPayload() {
+    const metrics = getScrollMetrics();
+    const scrollDirection = metrics.scroll_y > lastTrackedScrollY
+      ? 'down'
+      : metrics.scroll_y < lastTrackedScrollY
+        ? 'up'
+        : metrics.scroll_x > lastTrackedScrollX
+          ? 'right'
+          : metrics.scroll_x < lastTrackedScrollX
+            ? 'left'
+            : '';
+
+    return Object.assign({
+      event_type: 'scroll',
+      action_category: 'page_scroll',
+      scroll_direction: scrollDirection
+    }, metrics);
+  }
+
+  function sendScrollEvent() {
+    scrollTimeoutId = null;
+    const payload = buildScrollPayload();
+
+    if (payload.scroll_x === lastTrackedScrollX && payload.scroll_y === lastTrackedScrollY) {
+      return;
+    }
+
+    lastTrackedScrollX = payload.scroll_x;
+    lastTrackedScrollY = payload.scroll_y;
+    sendEvent(payload);
+  }
+
   document.addEventListener('click', function (event) {
     const target = getClickedElement(event.target);
     if (!target) return;
@@ -147,6 +210,21 @@
       form_id: field.form ? field.form.id || '' : ''
     });
   }, true);
+
+  window.addEventListener('scroll', function () {
+    if (scrollTimeoutId) {
+      window.clearTimeout(scrollTimeoutId);
+    }
+
+    scrollTimeoutId = window.setTimeout(sendScrollEvent, SCROLL_DEBOUNCE_MS);
+  }, { passive: true });
+
+  window.addEventListener('pagehide', function () {
+    if (!scrollTimeoutId) return;
+
+    window.clearTimeout(scrollTimeoutId);
+    sendScrollEvent();
+  });
 
   window.websiteActivityTracker = {
     track: sendEvent
