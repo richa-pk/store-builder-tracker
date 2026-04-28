@@ -93,9 +93,10 @@ function ensureHeader_(sheet) {
 }
 
 function mapEventToRow_(event) {
+  const deviceType = event.device_type || getDeviceType_(event);
   const notes = [
     event.action_category ? `category=${event.action_category}` : '',
-    event.device_type ? `device_type=${event.device_type}` : '',
+    deviceType ? `device_type=${deviceType}` : '',
     event.scroll_y !== undefined ? `scroll_y=${event.scroll_y}px` : '',
     event.scroll_x !== undefined ? `scroll_x=${event.scroll_x}px` : '',
     event.scroll_depth_percent !== undefined ? `scroll_depth=${event.scroll_depth_percent}%` : '',
@@ -127,10 +128,31 @@ function mapEventToRow_(event) {
     event.user_id || '',
     event.session_id || '',
     event.referrer || '',
-    event.device_type || '',
+    deviceType,
     event.user_agent || '',
     notes
   ];
+}
+
+function getDeviceType_(event) {
+  const userAgent = event.user_agent || '';
+  const viewportWidth = event.viewport && event.viewport.width ? Number(event.viewport.width) : 0;
+  const isDesktopUserAgent = /Windows NT|Macintosh|X11|CrOS|Linux x86_64/i.test(userAgent) && !/Mobile|iPhone|iPad|Android/i.test(userAgent);
+  const isAndroidTablet = /Android/i.test(userAgent) && !/Mobi|Mobile/i.test(userAgent);
+
+  if (isDesktopUserAgent || (viewportWidth >= 1024 && !/Mobile|Mobi|Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent))) {
+    return 'desktop';
+  }
+
+  if (/iPad|Tablet|PlayBook|Silk/i.test(userAgent) || isAndroidTablet || viewportWidth >= 768 && viewportWidth <= 1180 && /Mobile|Mobi|Android/i.test(userAgent)) {
+    return 'tablet';
+  }
+
+  if (/Mobile|Mobi|Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)) {
+    return 'mobile';
+  }
+
+  return 'desktop';
 }
 
 function json_(data) {

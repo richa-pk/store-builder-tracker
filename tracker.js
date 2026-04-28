@@ -29,6 +29,12 @@
     const hasTouch = navigator.maxTouchPoints && navigator.maxTouchPoints > 1;
     const width = window.innerWidth || document.documentElement.clientWidth || 0;
     const isAndroidTablet = /Android/i.test(userAgent) && !/Mobi/i.test(userAgent);
+    const isIPadAsMac = /Macintosh/i.test(userAgent) && hasTouch;
+    const isDesktopUserAgent = /Windows NT|Macintosh|X11|CrOS|Linux x86_64/i.test(userAgent) && !isIPadAsMac;
+
+    if (isDesktopUserAgent || (width >= 1024 && !hasTouch)) {
+      return 'desktop';
+    }
 
     if (/iPad|Tablet|PlayBook|Silk/i.test(userAgent) || isAndroidTablet || (hasTouch && width >= 768 && width <= 1180)) {
       return 'tablet';
