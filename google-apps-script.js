@@ -41,8 +41,9 @@ function doGet(e) {
       user_id: row[9],
       session_id: row[10],
       referrer: row[11],
-      user_agent: row[12],
-      notes: row[13]
+      device_type: row[12],
+      user_agent: row[13],
+      notes: row[14]
     })).reverse();
 
     return json_(events);
@@ -58,9 +59,7 @@ function getOrCreateSheet_() {
 }
 
 function ensureHeader_(sheet) {
-  if (sheet.getLastRow() > 0) return;
-
-  sheet.appendRow([
+  const headers = [
     'Timestamp',
     'Activity Type',
     'Page URL',
@@ -73,14 +72,30 @@ function ensureHeader_(sheet) {
     'User ID',
     'Session ID',
     'Referrer',
+    'Device Type',
     'Device Info',
     'Notes'
-  ]);
+  ];
+
+  if (sheet.getLastRow() > 0) {
+    const currentHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+
+    if (currentHeaders[12] !== 'Device Type') {
+      sheet.insertColumnBefore(13);
+      sheet.getRange(1, 13).setValue('Device Type');
+    }
+
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    return;
+  }
+
+  sheet.appendRow(headers);
 }
 
 function mapEventToRow_(event) {
   const notes = [
     event.action_category ? `category=${event.action_category}` : '',
+    event.device_type ? `device_type=${event.device_type}` : '',
     event.scroll_y !== undefined ? `scroll_y=${event.scroll_y}px` : '',
     event.scroll_x !== undefined ? `scroll_x=${event.scroll_x}px` : '',
     event.scroll_depth_percent !== undefined ? `scroll_depth=${event.scroll_depth_percent}%` : '',
@@ -112,6 +127,7 @@ function mapEventToRow_(event) {
     event.user_id || '',
     event.session_id || '',
     event.referrer || '',
+    event.device_type || '',
     event.user_agent || '',
     notes
   ];

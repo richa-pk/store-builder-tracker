@@ -24,6 +24,23 @@
     return sessionId;
   }
 
+  function getDeviceType() {
+    const userAgent = navigator.userAgent || '';
+    const hasTouch = navigator.maxTouchPoints && navigator.maxTouchPoints > 1;
+    const width = window.innerWidth || document.documentElement.clientWidth || 0;
+    const isAndroidTablet = /Android/i.test(userAgent) && !/Mobi/i.test(userAgent);
+
+    if (/iPad|Tablet|PlayBook|Silk/i.test(userAgent) || isAndroidTablet || (hasTouch && width >= 768 && width <= 1180)) {
+      return 'tablet';
+    }
+
+    if (/Mobi|Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)) {
+      return 'mobile';
+    }
+
+    return 'desktop';
+  }
+
   function baseEvent() {
     return {
       timestamp: new Date().toISOString(),
@@ -31,6 +48,7 @@
       page_title: document.title,
       referrer: document.referrer || '',
       user_agent: navigator.userAgent,
+      device_type: getDeviceType(),
       session_id: getSessionId(),
       viewport: {
         width: window.innerWidth,
